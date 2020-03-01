@@ -48,14 +48,33 @@ void readsensor(){
     duration_front=pulseIn(front_echo,HIGH);
     distance_front=((duration_front)/float(2))*(0.034); // distance from front wall
 }
-void checkwall(){
+void checkwall()
+{
 
-/* if(no left wall)  ---->   setdirection(1)  turn left
-        if ()                   setdirection(2)   turn right
-                                setdirection(3)    move forward
-*/
+  if(leftwall==true && frontwall==false)
+         setdirection(3)
+   else if(leftwall==false && frontwall==false)
+          setdirection(1)
+   else if if(leftwall==false && frontwall==true)
+          setdirection(1)
+   else if(leftwall==true && frontwall==true)
+          setdirection(2)                       
 
 
+}
+void wall_detect()
+{3
+  if(distance_left<lth)
+      leftwall=true;
+  if(distance_left>lth)
+      leftwall=false;
+  if(distance_front>fth)
+      frontwall=false;
+  if(distance_front<fth)
+      frontwall=true;
+  if(distance_left>lth && distance_front>fth)
+      rightwall=false;
+  
 }
 
 void setdirection(int dir){
@@ -107,6 +126,8 @@ void setup(){
 
 void loop(){
     readsensor();
+    delay(200);
+    wall_detect();
     delay(200);
     checkwall();
     delay(200);
