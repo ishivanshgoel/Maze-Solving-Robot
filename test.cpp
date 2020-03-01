@@ -63,7 +63,7 @@ void checkwall()
 
 }
 void wall_detect()
-{3
+{
   if(distance_left<lth)
       leftwall=true;
   if(distance_left>lth)
