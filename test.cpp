@@ -4,7 +4,7 @@ int lth=5;  // threshold distance for left sensor
 int fth=5;  // threshold distance for front sensor
 
 float distance_left,distance_front;  // left and front distance
-float duration_left,duration_front; // 
+float duration_left,duration_front; //   
 
 int turning_speed= 100;  // bot speed for taking left or right turn
 
@@ -78,9 +78,13 @@ void wall_detect()
 }
 
 void setdirection(int dir){
-    /*  if (dir==1)  turn_left();
-            if (dir==2)  turn_right();
-      */
+  if (dir==1)  
+      turn_left();
+  if (dir==2)  
+      turn_right();
+  if (dir==3)
+      go_straight();
+      
 
 }
 
@@ -97,13 +101,42 @@ for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_spee
     analogWrite(enA,speed_in1);
     analogWrite(enB,speed_in3);
     delay(20);
+   }
 }
 
 void turn_right(){
-    
+        digitalWrite(in1,HIGH);
+        digitalWrite(in2,LOW);     // to move left tyre in clock wise direction
+        digitalWrite(in3,LOW);       // to move right tyre in anticlock wise direction 
+        digitalWrite(in4,HIGH);
+
+         delay(50);
+
+    for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
+
+        analogWrite(enA,speed_in1);
+        analogWrite(enB,speed_in3);
+        delay(20);
+       }
 }
 
+void go_straight()
+{
+        digitalWrite(in1,HIGH);
+        digitalWrite(in2,LOW);     // to move left tyre in clock wise direction
+        digitalWrite(in3,HIGH);       // to move right tyre in clock wise direction 
+        digitalWrite(in4,LOW);
 
+         delay(50);
+   
+    //Commented this out as i'm not sure what this for loop is doing exactly
+   /* for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
+
+        analogWrite(enA,speed_in1);
+        analogWrite(enB,speed_in3);
+        delay(20);
+       }*/
+}   
 
 void setup(){
     pinMode(left_trigger,OUTPUT);   // sets trigger pin for left sensor
