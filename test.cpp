@@ -41,27 +41,41 @@ int in4=1;
 
 void readsensor(){
 // calculation of distance from right wall
+    digitalWrite(left_trigger,LOW);
+    delayMicroseconds(2);
+    digitalWrite(left_trigger,HIGH);
+    delayMicroseconds(10);
+    digitalWrite(left_trigger,LOW);
     duration_left=pulseIn(left_echo,HIGH);
-    distance_left=((duration_left)/float(2))*(0.034);   // distance from left wall
+    distance_left=((duration_left)/float(2))*(0.034);
+    Serial.println(distance_left);
+    Serial.println(duration_left);
+       // distance from left wall
 
 // calculation of distance from front wall
+    digitalWrite(front_trigger,LOW);
+    delayMicroseconds(2);
+    digitalWrite(front_trigger,HIGH);
+    delayMicroseconds(10);
+    digitalWrite(front_trigger,LOW);
     duration_front=pulseIn(front_echo,HIGH);
     distance_front=((duration_front)/float(2))*(0.034); // distance from front wall
+    Serial.println(distance_front);
+    Serial.println(duration_front);
 }
 void checkwall()
 {
-
   if(leftwall==true && frontwall==false)
-         setdirection(3)
+         setdirection(3);
    else if(leftwall==false && frontwall==false)
-          setdirection(1)
-   else if if(leftwall==false && frontwall==true)
-          setdirection(1)
+          setdirection(1);
+   else if(leftwall==false && frontwall==true)
+          setdirection(1);
    else if(leftwall==true && frontwall==true)
-          setdirection(2)                       
-
-
+          setdirection(2);                      
 }
+
+
 void wall_detect()
 {
   if(distance_left<lth)
@@ -70,11 +84,10 @@ void wall_detect()
       leftwall=false;
   if(distance_front>fth)
       frontwall=false;
-  if(distance_front<fth)
+  if(distance_front<fth)                         //// if(distance_left==distance_front)  ---> go_straight()////
       frontwall=true;
   if(distance_left>lth && distance_front>fth)
       rightwall=false;
-  
 }
 
 void setdirection(int dir){
@@ -84,8 +97,6 @@ void setdirection(int dir){
       turn_right();
   if (dir==3)
       go_straight();
-      
-
 }
 
 void turn_left(){
@@ -93,8 +104,7 @@ void turn_left(){
     digitalWrite(in2,HIGH);     // to move left tyre in anticlock wise direction
     digitalWrite(in3,HIGH);       // to move right tyre in clock wise direction 
     digitalWrite(in4,LOW);
-
-     delay(50);
+    delay(50);
 
 for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
 
@@ -127,21 +137,27 @@ void go_straight()
         digitalWrite(in3,HIGH);       // to move right tyre in clock wise direction 
         digitalWrite(in4,LOW);
 
-         delay(50);
+        delay(50);
    
     //Commented this out as i'm not sure what this for loop is doing exactly
    /* for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
-
         analogWrite(enA,speed_in1);
         analogWrite(enB,speed_in3);
         delay(20);
        }*/
 }   
 
+void stop(){                         // ******* ir reading --> 0 0 *********
+    digitalWrite(in1,LOW);
+    digitalWrite(in2,LOW);
+    digitalWrite(in3,LOW);
+    digitalWrite(in4,LOW);
+}
+
 void setup(){
     pinMode(left_trigger,OUTPUT);   // sets trigger pin for left sensor
     pinMode(front_trigger,OUTPUT);    // sets trigger pin for front sensor
-    pinMode(left_echo,INPUT);     // sets echo pin for left sendor
+    pinMode(left_echo,INPUT);     // sets echo pin for left sensor
     pinMode(front_echo,INPUT);      // sets echo pin for front sensor
         
         
@@ -164,6 +180,4 @@ void loop(){
     delay(200);
     checkwall();
     delay(200);
-   
-
 }
