@@ -1,7 +1,7 @@
 #include<Arduino.h>
 
-int lth=5;  // threshold distance for left sensor
-int fth=5;  // threshold distance for front sensor
+int lth=5;  // threshold distance for left sensor in cm
+int fth=5;  // threshold distance for front sensor in cm
 
 float distance_left,distance_front;  // left and front distance
 float duration_left,duration_front; //   
@@ -46,8 +46,8 @@ void readsensor(){
     digitalWrite(left_trigger,HIGH);
     delayMicroseconds(10);
     digitalWrite(left_trigger,LOW);
-    duration_left=pulseIn(left_echo,HIGH);
-    distance_left=((duration_left)/float(2))*(0.034);
+    duration_left=pulseIn(left_echo,HIGH);// Time in MicroSeconds
+    distance_left=((duration_left)/float(2))*(0.034);//Distance in centimeters
     Serial.println(distance_left);
     Serial.println(duration_left);
        // distance from left wall
@@ -58,8 +58,8 @@ void readsensor(){
     digitalWrite(front_trigger,HIGH);
     delayMicroseconds(10);
     digitalWrite(front_trigger,LOW);
-    duration_front=pulseIn(front_echo,HIGH);
-    distance_front=((duration_front)/float(2))*(0.034); // distance from front wall
+    duration_front=pulseIn(front_echo,HIGH);//Time in MicroSeconds
+    distance_front=((duration_front)/float(2))*(0.034); // distance from front wall in cm
     Serial.println(distance_front);
     Serial.println(duration_front);
 }
