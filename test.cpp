@@ -1,16 +1,20 @@
 #include<Arduino.h>
 
-int lth=5;  // threshold distance for left sensor in cm
-int fth=5;  // threshold distance for front sensor in cm
+//  /dev/tty50
+
+//  /dev/tty50
+
+float lth=5;  // threshold distance for left sensor
+float fth=5;  // threshold distance for front sensor
 
 float distance_left,distance_front;  // left and front distance
 float duration_left,duration_front; //   
 
-int turning_speed= 100;  // bot speed for taking left or right turn
+int turning_speed= 200;  // bot speed for taking left or right turn
 
+int normal_speed=150;  // normal bot speed 
 
-
-///  Doubt::  while taking turn speed of both left and right tyres should be same?? 
+///  Doubt::  while taking turn speed of both left and right wheel should be same?? 
 
 
 // detecting walls
@@ -19,16 +23,16 @@ bool rightwall=false;
 bool frontwall=false;
 
 // pin declaration for ultrasonic sensors
-int left_trigger=13;   // trigger pin for left sensor
-int left_echo=12;     // echo pin for left sensor
+int left_trigger=8;   // trigger pin for left sensor
+int left_echo=9;     // echo pin for left sensor
 int front_trigger=11;     // trigger pin for front sensor
 int front_echo=10;   // echo pin for frontsensors
 ///////////////////////////////////////////////////////////////////////////////////////////
 
 // pin declaration for motor driver of left motor
 
-int enA=7;   // speed control pin for left motor
-int in1=6;
+int enA=6;   // speed control pin for left motor
+int in1=7;
 int in2=5;  // direction change
 
 
@@ -36,7 +40,7 @@ int in2=5;  // direction change
 
 int enB=3;
 int in3=2;
-int in4=1;
+int in4=4;
 
 
 void readsensor(){
@@ -46,11 +50,13 @@ void readsensor(){
     digitalWrite(left_trigger,HIGH);
     delayMicroseconds(10);
     digitalWrite(left_trigger,LOW);
-    duration_left=pulseIn(left_echo,HIGH);// Time in MicroSeconds
-    distance_left=((duration_left)/float(2))*(0.034);//Distance in centimeters
+    duration_left=pulseIn(left_echo,HIGH);
+    distance_left=(duration_left*0.034/2);
+    Serial.print("Left distanmce");
     Serial.println(distance_left);
-    Serial.println(duration_left);
        // distance from left wall
+
+
 
 // calculation of distance from front wall
     digitalWrite(front_trigger,LOW);
@@ -58,45 +64,84 @@ void readsensor(){
     digitalWrite(front_trigger,HIGH);
     delayMicroseconds(10);
     digitalWrite(front_trigger,LOW);
-    duration_front=pulseIn(front_echo,HIGH);//Time in MicroSeconds
-    distance_front=((duration_front)/float(2))*(0.034); // distance from front wall in cm
+    duration_front=pulseIn(front_echo,HIGH);
+    distance_front=(duration_front*0.034/2);
+    Serial.print("Front distance");
     Serial.println(distance_front);
-    Serial.println(duration_front);
 }
+
+
+
 void checkwall()
 {
   if(leftwall==true && frontwall==false)
+  {
+    Serial.println("Left wall");
          setdirection(3);
+  }
    else if(leftwall==false && frontwall==false)
+   {
+     Serial.println("No left and front");
           setdirection(1);
+   }
    else if(leftwall==false && frontwall==true)
+   {
+     Serial.println("Front wall");
           setdirection(1);
+   }
    else if(leftwall==true && frontwall==true)
-          setdirection(2);                      
+   {
+     Serial.println("Left and and front wall");
+          setdirection(2);       
+   }
+   
 }
-
-
 void wall_detect()
 {
   if(distance_left<lth)
+  {
       leftwall=true;
+      Serial.println("Left wall Detected");
+  }
   if(distance_left>lth)
+  {
       leftwall=false;
+      Serial.println("No Right wall");
+  }
   if(distance_front>fth)
+  {
       frontwall=false;
-  if(distance_front<fth)                         //// if(distance_left==distance_front)  ---> go_straight()////
+      Serial.println("No front wall");
+  }
+  if(distance_front<fth)   
+  {                      //// if(distance_left==distance_front)  ---> go_straight()////
       frontwall=true;
+      Serial.println("Front wall detected");
+  }
   if(distance_left>lth && distance_front>fth)
+  {
       rightwall=false;
+      Serial.println("Right wall detected");
+  }
+
 }
 
 void setdirection(int dir){
   if (dir==1)  
+  {
+      Serial.println("Turn left");
       turn_left();
+  }
   if (dir==2)  
-      turn_right();
+   { 
+       Serial.println("Turn Right");
+         turn_right();
+   }
   if (dir==3)
+  {
+      Serial.println("Go Straight");
       go_straight();
+  }
 }
 
 void turn_left(){
@@ -104,13 +149,15 @@ void turn_left(){
     digitalWrite(in2,HIGH);     // to move left tyre in anticlock wise direction
     digitalWrite(in3,HIGH);       // to move right tyre in clock wise direction 
     digitalWrite(in4,LOW);
-    delay(50);
-
-for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
+for(int speed_in1=normal_speed,speed_in3=normal_speed;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
 
     analogWrite(enA,speed_in1);
     analogWrite(enB,speed_in3);
-    delay(20);
+    Serial.print("Speed Left");
+    Serial.println(speed_in1);
+    Serial.print("Speed Right");
+    Serial.println(speed_in3);
+    delay(10);
    }
 }
 
@@ -120,13 +167,16 @@ void turn_right(){
         digitalWrite(in3,LOW);       // to move right tyre in anticlock wise direction 
         digitalWrite(in4,HIGH);
 
-         delay(50);
 
-    for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
+    for(int speed_in1=normal_speed,speed_in3=normal_speed;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
 
         analogWrite(enA,speed_in1);
         analogWrite(enB,speed_in3);
-        delay(20);
+        Serial.println("Speed Left");
+        Serial.println(speed_in1);
+        Serial.println("Speed Right");
+        Serial.println(speed_in3);
+        delay(5);
        }
 }
 
@@ -136,8 +186,9 @@ void go_straight()
         digitalWrite(in2,LOW);     // to move left tyre in clock wise direction
         digitalWrite(in3,HIGH);       // to move right tyre in clock wise direction 
         digitalWrite(in4,LOW);
-
-        delay(50);
+        analogWrite(enA,255);
+        analogWrite(enB,255);
+        delay(5);
    
     //Commented this out as i'm not sure what this for loop is doing exactly
    /* for(int speed_in1=0,speed_in3=0;speed_in1<=turning_speed,speed_in3<=turning_speed;speed_in1++,speed_in3++){
@@ -169,15 +220,15 @@ void setup(){
     pinMode(in3,OUTPUT);
     pinMode(in4,OUTPUT);
 
-
     Serial.begin(9600); // starts the serial communication
 }
 
 void loop(){
     readsensor();
-    delay(200);
+    delayMicroseconds(10);
     wall_detect();
-    delay(200);
+    delayMicroseconds(10);
     checkwall();
-    delay(200);
+    delayMicroseconds(10);
+
 }
